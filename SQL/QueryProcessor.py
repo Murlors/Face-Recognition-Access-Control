@@ -1,11 +1,7 @@
 import asyncio
-
 from psycopg2 import pool
 
-import sys
-
-sys.path.append("..")
-from timeit import *
+from timeit import timeit
 
 
 class QueryProcessor:
