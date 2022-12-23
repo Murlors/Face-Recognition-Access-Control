@@ -1,4 +1,4 @@
-class DBInserts:
+class Inserts:
     def __init__(self, conn):
         # 传递与数据库的连接
         self.conn = conn

@@ -1,3 +1,3 @@
 from AccessControlSystem import AccessControlSystem
-from DBInserts import DBInserts
+from Inserts import Inserts
 # __all__ = ['AccessControlSystem', 'DBInserts']
