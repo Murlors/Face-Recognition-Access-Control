@@ -1,3 +1,3 @@
-from AccessControlSystem import AccessControlSystem
-from Inserts import *
+from SQL.AccessControlSystem import AccessControlSystem
+from SQL.Inserts import *
 # __all__ = ['AccessControlSystem', 'DBInserts']
