@@ -56,12 +56,12 @@ CREATE TABLE Door(
 CREATE TYPE DoorDirection AS ENUM ('In', 'Out');
 
 CREATE TABLE DoorRecord(
-	ID	varchar(20)	PRIMARY KEY	references	Person(ID),
-	RecordTime	TIMESTAMP WITH TIME ZONE	NOT NULL,
-	DoorID	integer	NOT NULL	references	Door(DoorID),
-	Direction	DoorDirection	NOT NULL,
-	ImageData bytea	NOT NULL,
-	ResultID	varchar(20)
+	RecordID	SERIAL  PRIMARY KEY,
+	RecordTime	TIMESTAMP WITH TIME ZONE	DEFAULT ('now'::text)::timestamp with time zone,
+    ResultID	varchar(20) references  Person(ID),
+    ImageData   bytea	NOT NULL,
+	DoorID	integer	NOT NULL	references  Door(DoorID),
+	Direction	DoorDirection	NOT NULL
 );
 
 CREATE TABLE FaceImage(

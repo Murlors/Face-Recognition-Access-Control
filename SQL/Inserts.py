@@ -1,3 +1,8 @@
+import psycopg2
+
+from SQL import AccessControlSystem
+
+
 class Inserts:
     def __init__(self, conn):
         # 传递与数据库的连接
@@ -48,13 +53,18 @@ class Inserts:
                             (door_id, door_locate))
         self.conn.commit()
 
-    def insert_door_record(self, id, record_time, door_id, direction, image_data, result_id):
-        self.cursor.execute(
-            "INSERT INTO DoorRecord (ID, RecordTime, DoorID, Direction, ImageData, ResultID)"
-            " VALUES (%s, %s, %s, %s, %s, %s)", (id, record_time, door_id, direction, image_data, result_id))
-        self.conn.commit()
+async def store_face_image(id, image_data, feature_vector):
+    async with psycopg2.connect(AccessControlSystem().conn) as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute("INSERT INTO FaceImage VALUES (%s, %s, %s)",
+                                 (id, psycopg2.Binary(image_data), psycopg2.Binary(feature_vector)))
+            conn.commit()
 
-    def insert_face_image(self, id, image_data, feature_vector):
-        self.cursor.execute("INSERT INTO FaceImage (ID, ImageData, FeatureVector) VALUES (%s, %s, %s)",
-                            (id, image_data, feature_vector))
-        self.conn.commit()
+
+async def store_face_recogonized_record(door_id, direction, image_data, result_id):
+    async with psycopg2.connect(AccessControlSystem().conn) as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute("INSERT DoorRecord (DoorID, Direction, ImageData, ResultID) ",
+                                 "VALUES (%s, %s, %s, %s, %s)",
+                                 (door_id, direction, psycopg2.Binary(image_data), result_id))
+            conn.commit()
