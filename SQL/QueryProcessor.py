@@ -61,9 +61,16 @@ class QueryProcessor:
               "WHERE TeacherID = %s AND TeacherView.TeacherID = DoorRecordView.ResultID", (teacher_id,)
         return asyncio.run(self.process_query(sql))
 
+    def query_door_record(self, door_id, direction, start_time, end_time):
+        # 查询门禁记录
+        sql = "SELECT * FROM DoorRecordView " \
+              "WHERE DoorID = %s AND Direction = %s AND RecordTime BETWEEN %s AND %s", \
+            (door_id, direction, start_time, end_time)
+        return asyncio.run(self.process_query(sql))
+
     def load_face_image_feature_vector(self):
         # 加载人脸图像特征向量
-        sql = "SELECT ID,FeatureVector FROM FaceImage"
+        sql = "SELECT ID,Name,FeatureVector FROM FaceImage NATURAL JOIN Person"
         return asyncio.run(self.process_query(sql))
 
 

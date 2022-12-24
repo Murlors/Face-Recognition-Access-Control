@@ -1,9 +1,7 @@
 import logging
 
-import cv2
 import numpy as np
 import torch
-from PIL import Image
 from facenet_pytorch import MTCNN, InceptionResnetV1
 from torchvision import transforms
 
@@ -33,31 +31,30 @@ class Facenet:
         results = insert_processor.load_face_image_feature_vector()
         self.feature_lib: list[dict] = [{
             'id': id,
-            'feature_vector': feature_vector
-        } for id, feature_vector in results]
+            'name': name,
+            'feature_vector': torch.tensor(feature_vector)
+        } for id, name, feature_vector in results]
+
+    def face_detect(self, image_data):
+        # 人脸的位置坐标和概率
+        boxes, probs = self.mtcnn.detect(image_data)
+        return boxes, probs
+
+    def boxes_to_images(self, image_data, boxes):
+        return_images = [self.loader(image_data.crop(box).resize((160, 160))) for box in boxes]
+        return torch.stack(return_images).to(self.device)
 
     def get_features(self, image_data):
         # 计算人脸特征向量
         features = self.resnet(image_data).detach()
         return features
 
-    def boxes_to_images(self, image_data, boxes, probs):
-        # 人脸概率在0.5以上的保留
-        return_images = [self.loader(image_data.crop(box).resize((160, 160)))
-                         for box, prob in zip(boxes, probs)
-                         if prob > 0.5]
-        return torch.stack(return_images).to(self.device)
+    def face_recognize(self, images):
+        # 计算人脸特征向量
+        embeddings_features = self.get_features(images)
+        return embeddings_features
 
-    def predict(self, image_data):
-        # 人脸的位置坐标和概率
-        boxes, probs = self.mtcnn.detect(image_data)
-        if boxes is not None:  # 检测到人脸
-            images = self.boxes_to_images(image_data, boxes, probs)
-            # 计算人脸特征向量
-            embeddings_features = self.get_features(images)
-            return embeddings_features, images
-
-    def face_recognize(self, features):
+    def face_features_compare(self, features):
         if features:
             dists = [[(feature - feature_in_lib['feature_vector']).norm().item()
                       for feature_in_lib in self.feature_lib]
@@ -65,28 +62,22 @@ class Facenet:
             # 求最小值，即为识别到的人脸
             recognized_face = np.argmin(dists, axis=1)
             IDs = []
+            Names = []
             for i in range(len(recognized_face)):
-                print(dists[i][recognized_face[i]], self.feature_lib[recognized_face[i]]['id'])
                 if dists[i][recognized_face[i]] < 0.25:
-                    result_id = self.feature_lib[recognized_face[i]['id']]
-                    IDs.append(result_id)
-            return IDs
+                    IDs.append(self.feature_lib[recognized_face[i]['id']])
+                    Names.append(self.feature_lib[recognized_face[i]['name']])
+            return IDs, Names
 
-    def register_new_face(self, id, image_data, new_feature_vector):
+    def register_new_face(self, id, name, image_data, new_feature_vector):
         # 注册新的人脸
         self.feature_lib.append({
             'id': id,
+            'name': name,
             'feature_vector': new_feature_vector
         })
         insert_processor.store_face_image(id, image_data.numpy(), new_feature_vector)
-        print(f"register: {id}")
+        print(f"register: {id, name}")
 
 
-# if __name__ == '__main__':
-#     facenet = Facenet()
-#     frame = Image.open("3.png")
-#     framePil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-#     features, images = facenet.predict(framePil)
-#     IDs = facenet.face_recognize(features)
-#     for id, image_data in zip(IDs, images):
-#         insert_processor.store_face_recogonized_record(id, image_data.numpy(), door_id, direction)
+facenet = Facenet()

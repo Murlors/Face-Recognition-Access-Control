@@ -64,7 +64,7 @@ class InsertProcessor:
         asyncio.run(self.run_insert(sql))
 
     def store_face_recognized_record(self, door_id, direction, image_data, result_id):
-        sql = "INSERT DoorRecord (DoorID, Direction, ImageData, ResultID) VALUES (%s, %s, %s, %s, %s)", \
+        sql = "INSERT INTO DoorRecord (DoorID, Direction, ImageData, ResultID) VALUES (%s, %s, %s, %s, %s)", \
             (door_id, direction, psycopg2.Binary(image_data), result_id)
         asyncio.run(self.run_insert(sql))
 
