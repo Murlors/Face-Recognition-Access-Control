@@ -26,12 +26,15 @@ class Facenet:
         # 人脸识别模型
         self.resnet = InceptionResnetV1(pretrained='vggface2', device=self.device).eval().to(self.device)
         self.loader = transforms.Compose([transforms.ToTensor()])
-        self.feature_lib = []
-        self.featureLibID = []
+        self.feature_lib: list[dict] = [{}]
 
     def load_saved_features(self):
         # 从数据库加载人脸特征向量
-        self.feature_lib, self.featureLibID = insert_processor.load_face_images()
+        results = insert_processor.load_face_image_feature_vector()
+        self.feature_lib: list[dict] = [{
+            'id': id,
+            'feature_vector': feature_vector
+        } for id, feature_vector in results]
 
     def get_features(self, image_data):
         # 计算人脸特征向量
@@ -56,32 +59,34 @@ class Facenet:
 
     def face_recognize(self, features):
         if features:
-            dists = [[(feature - feature_in_lib).norm().item()
+            dists = [[(feature - feature_in_lib['feature_vector']).norm().item()
                       for feature_in_lib in self.feature_lib]
                      for feature in features]
             # 求最小值，即为识别到的人脸
             recognized_face = np.argmin(dists, axis=1)
             IDs = []
             for i in range(len(recognized_face)):
-                print(dists[i][recognized_face[i]], self.featureLibID[recognized_face[i]])
+                print(dists[i][recognized_face[i]], self.feature_lib[recognized_face[i]]['id'])
                 if dists[i][recognized_face[i]] < 0.25:
-                    result_id = self.featureLibID[recognized_face[i]]
+                    result_id = self.feature_lib[recognized_face[i]['id']]
                     IDs.append(result_id)
             return IDs
 
     def register_new_face(self, id, image_data, new_feature_vector):
         # 注册新的人脸
-        self.featureLibID.append(id)
-        self.feature_lib.append(new_feature_vector)
+        self.feature_lib.append({
+            'id': id,
+            'feature_vector': new_feature_vector
+        })
         insert_processor.store_face_image(id, image_data.numpy(), new_feature_vector)
         print(f"register: {id}")
 
 
-if __name__ == '__main__':
-    facenet = Facenet()
-    frame = Image.open("3.png")
-    framePil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-    features, images = facenet.predict(framePil)
-    IDs = facenet.face_recognize(features)
-    for id, image_data in zip(IDs, images):
-        insert_processor.store_face_recogonized_record(id, image_data.numpy(), door_id, direction)
+# if __name__ == '__main__':
+#     facenet = Facenet()
+#     frame = Image.open("3.png")
+#     framePil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+#     features, images = facenet.predict(framePil)
+#     IDs = facenet.face_recognize(features)
+#     for id, image_data in zip(IDs, images):
+#         insert_processor.store_face_recogonized_record(id, image_data.numpy(), door_id, direction)
