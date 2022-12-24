@@ -8,7 +8,7 @@ CREATE TABLE Faculty(
 );
 
 CREATE TABLE Major(
-	MajorID	integer	PRIMARY KEY,
+	MajorID integer	PRIMARY KEY,
 	MajorName	varchar(50)	NOT NULL,
 	FacultyID	integer	NOT NULL	references	Faculty(FacultyID)
 );

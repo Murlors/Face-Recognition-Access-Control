@@ -1,20 +1,16 @@
-import asyncio
-from psycopg2 import pool
-
-from timeit import timeit
+from SQL.ConnectionPool import ConnectionPool
 
 
 class QueryProcessor:
-    def __init__(self, user='postgres', password='postgres', host='localhost', dbname='accesscontrolsystem'):
-        # 创建连接池
-        self.conn_pool = pool.ThreadedConnectionPool(
-            minconn=4, maxconn=20, host=host, dbname=dbname, user=user, password=password)
+    def __init__(self):
+        # 与连接池连接
+        self.conn_pool = ConnectionPool().conn_pool
 
-    async def run_query(self, query):
+    async def run_query(self, sql):
         # 从连接池中获取一个连接
         conn = self.conn_pool.getconn()
         cursor = conn.cursor()
-        cursor.execute(query)
+        cursor.execute(sql)
         result = cursor.fetchall()
         # 将连接放回连接池中
         self.conn_pool.putconn(conn)
@@ -26,14 +22,19 @@ async def process_query(query):
     return await query_processor.run_query(query)
 
 
-@timeit
-def test():
-    queries = ["SELECT * FROM course", "SELECT * FROM dept", "SELECT * FROM sc", "SELECT * FROM student"]
-    for query in queries:
-        results = asyncio.run(process_query(query))
-        print(f"Query: {query}")
-        print(f"Result: {results}")
+query_processor = QueryProcessor()
 
-
-query_processor = QueryProcessor(dbname='test')
-test()
+# @timeit
+# def test():
+#     queries = ["SELECT * FROM course", "SELECT * FROM dept", "SELECT * FROM sc", "SELECT * FROM student"]
+#     for query in queries:
+#         results = asyncio.run(process_query(query))
+#         print(f"Query: {query}")
+#         print(f"Result: {results}")
+#
+# if __name__ == '__main__':
+#     start = time.time()
+#     for i in range(100):
+#         test()
+#     end = time.time()
+#     print(f"Time: {end - start}")
