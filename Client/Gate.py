@@ -34,6 +34,7 @@ class Gate:
         }
         returnData = requests.post(f"{self.url}/door_record", json=res)
         return returnData.text
+
     def run(self):
         ret = False
         frame = None

@@ -61,8 +61,42 @@ def register():
 @app.route("/door_record", methods=['POST'])
 def door_record():
     response = request.json
-    records = query_processor.query_record(
-        response["door_id"], response["direction"], response["start_time"], response["end_time"])
+    records = query_processor.query_door_record(**response)
+    return json.dumps(records)
+
+
+@app.route("/student_record", methods=['POST'])
+def student_record():
+    response = request.json
+    records = query_processor.query_student_face_recognition_record(**response)
+    return json.dumps(records)
+
+
+@app.route("/teacher_record", methods=['POST'])
+def teacher_record():
+    response = request.json
+    records = query_processor.query_teacher_face_recognition_record(**response)
+    return json.dumps(records)
+
+
+@app.route("/class_record", methods=['POST'])
+def class_record():
+    response = request.json
+    records = query_processor.query_class_face_recognition_record(**response)
+    return json.dumps(records)
+
+
+@app.route("/major_record", methods=['POST'])
+def major_record():
+    response = request.json
+    records = query_processor.query_major_face_recognition_record(**response)
+    return json.dumps(records)
+
+
+@app.route("/faculty_record", methods=['POST'])
+def faculty_record():
+    response = request.json
+    records = query_processor.query_faculty_face_recognition_record(**response)
     return json.dumps(records)
 
 
