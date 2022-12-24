@@ -4,7 +4,7 @@ from PIL import Image
 # from Model.facenetModel import Facenet
 # facenet = Facenet()
 cap = cv2.VideoCapture(0)
-while True:
+while cap.isOpened():
     # 获取图像
     ret, frame = cap.read()
     if ret:
@@ -14,8 +14,6 @@ while True:
         small_frame = cv2.resize(rgb_frame, (0, 0), fx=0.5, fy=0.5)
         # TODO: 给服务器发送图片(small_frame)识别人脸，返回人脸信息(Name, Box)
         # features, boxes = facenet.predict(framePil)
-        for i in range(len(boxes)):
-            temp = abs(boxes[i][0] - boxes[i][2]) * abs(boxes[i][1] - boxes[i][3])
         # IDs = facenet.face_recognize(features)
         # Names = facenet.get_name(IDs)
         for i in range(len(boxes)):  # 画框

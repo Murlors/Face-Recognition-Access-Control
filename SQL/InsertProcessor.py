@@ -5,7 +5,7 @@ import psycopg2
 from SQL import ConnectionPool
 
 
-class Inserts:
+class InsertProcessor:
     def __init__(self):
         # 与连接池连接
         self.conn_pool = ConnectionPool().conn_pool
@@ -19,41 +19,41 @@ class Inserts:
         # 将连接放回连接池中
         self.conn_pool.putconn(conn)
 
-    def insert_faculty(self, faculty_id, faculty_name):
+    def insert_into_faculty(self, faculty_id, faculty_name):
         sql = "INSERT INTO Faculty (FacultyID, FacultyName) " \
               "VALUES (%s, %s)", (faculty_id, faculty_name)
         asyncio.run(self.run_insert(sql))
 
-    def insert_major(self, major_id, major_name, faculty_id):
+    def insert_into_major(self, major_id, major_name, faculty_id):
         sql = "INSERT INTO Major (MajorID, MajorName, FacultyID) " \
               "VALUES (%s, %s, %s)", (major_id, major_name, faculty_id)
         asyncio.run(self.run_insert(sql))
 
-    def insert_class(self, class_id, major_id):
+    def insert_into_class(self, class_id, major_id):
         sql = "INSERT INTO Class (ClassID, MajorID) VALUES (%s, %s)", (class_id, major_id)
         asyncio.run(self.run_insert(sql))
 
-    def insert_person(self, id, name, gender, age, phone, person_type):
+    def insert_into_person(self, id, name, gender, age, phone, person_type):
         sql = "INSERT INTO Person (ID, Name, Gender, Age, Phone, PersonType) " \
               "VALUES (%s, %s, %s, %s, %s, %s)", (id, name, gender, age, phone, person_type)
         asyncio.run(self.run_insert(sql))
 
-    def insert_student(self, student_id, faculty_id, major_id, class_id):
+    def insert_into_student(self, student_id, faculty_id, major_id, class_id):
         sql = "INSERT INTO Student (StudentID, FacultyID, MajorID, ClassID) " \
               "VALUES (%s, %s, %s, %s)", (student_id, faculty_id, major_id, class_id)
         asyncio.run(self.run_insert(sql))
 
-    def insert_teacher(self, teacher_id, faculty_id, position):
+    def insert_into_teacher(self, teacher_id, faculty_id, position):
         sql = "INSERT INTO Teacher (TeacherID, FacultyID, Position) " \
               "VALUES (%s, %s, %s)", (teacher_id, faculty_id, position)
         asyncio.run(self.run_insert(sql))
 
-    def insert_worker(self, worker_id, worker_type):
+    def insert_into_worker(self, worker_id, worker_type):
         sql = "INSERT INTO Worker (WorkerID, WorkerType) " \
               "VALUES (%s, %s)", (worker_id, worker_type)
         asyncio.run(self.run_insert(sql))
 
-    def insert_door(self, door_id, door_locate):
+    def insert_into_door(self, door_id, door_locate):
         sql = "INSERT INTO Door (DoorID, DoorLocate) " \
               "VALUES (%s, %s)", (door_id, door_locate)
         asyncio.run(self.run_insert(sql))
@@ -69,4 +69,4 @@ class Inserts:
         asyncio.run(self.run_insert(sql))
 
 
-inserts = Inserts()
+insert_processor = InsertProcessor()

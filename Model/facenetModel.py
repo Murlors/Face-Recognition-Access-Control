@@ -7,7 +7,7 @@ from PIL import Image
 from facenet_pytorch import MTCNN, InceptionResnetV1
 from torchvision import transforms
 
-from SQL import inserts
+from SQL import insert_processor
 
 log = logging.getLogger('facenet')
 log.setLevel(logging.ERROR)
@@ -31,7 +31,7 @@ class Facenet:
 
     def load_saved_features(self):
         # 从数据库加载人脸特征向量
-        self.feature_lib, self.featureLibID = inserts.load_face_images()
+        self.feature_lib, self.featureLibID = insert_processor.load_face_images()
 
     def get_features(self, image_data):
         # 计算人脸特征向量
@@ -73,7 +73,7 @@ class Facenet:
         # 注册新的人脸
         self.featureLibID.append(id)
         self.feature_lib.append(new_feature_vector)
-        inserts.store_face_image(id, image_data.numpy(), new_feature_vector)
+        insert_processor.store_face_image(id, image_data.numpy(), new_feature_vector)
         print(f"register: {id}")
 
 
@@ -84,4 +84,4 @@ if __name__ == '__main__':
     features, images = facenet.predict(framePil)
     IDs = facenet.face_recognize(features)
     for id, image_data in zip(IDs, images):
-        inserts.store_face_recogonized_record(id, image_data.numpy(), door_id, direction)
+        insert_processor.store_face_recogonized_record(id, image_data.numpy(), door_id, direction)

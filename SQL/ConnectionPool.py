@@ -9,7 +9,7 @@ class ConnectionPool:
             cls._instance = super(ConnectionPool, cls).__new__(cls, *args, **kwargs)
             cls._instance.conn_pool = pool.ThreadedConnectionPool(
                 minconn=4, maxconn=20,
-                database="test", user="postgres", password="postgres",host="localhost", port="5432")
+                dbname="accesscontrolsystem", user="postgres", password="postgres",host="localhost", port="5432")
         return cls._instance
 
     def __init__(self):

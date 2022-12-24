@@ -1,4 +1,4 @@
 from SQL.ConnectionPool import ConnectionPool
-from SQL.Inserts import inserts
-from SQL.QueryProcessor import process_query
-# __all__ = ['AccessControlSystem', 'DBInserts']
+from SQL.InsertProcessor import insert_processor
+from SQL.QueryProcessor import query_processor
+# __all__ = ['ConnectionPool', 'InsertProcessor', 'QueryProcessor']

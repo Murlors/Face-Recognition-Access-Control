@@ -70,5 +70,11 @@ CREATE TABLE FaceImage(
 	FeatureVector	bytea	NOT NULL
 );
 
+CREATE VIEW StudentView AS SELECT * FROM Person JOIN Student on Student.StudentID = Person.ID;
+CREATE VIEW TeacherView AS SELECT * FROM Person JOIN Teacher on Teacher.TeacherID = Person.ID;
+CREATE VIEW WorkerView AS SELECT * FROM Person JOIN Worker on Worker.WorkerID = Person.ID;
+
+CREATE VIEW DoorRecordView AS SELECT * FROM DoorRecord NATURAL JOIN Door;
+
 CREATE INDEX PersonID ON Person(ID);
 CREATE INDEX FaceID ON FaceImage(ID,FeatureVector);
