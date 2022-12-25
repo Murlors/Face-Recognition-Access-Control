@@ -3,6 +3,14 @@ import requests
 url = "http://localhost:8090"
 
 
+def id_record(id, start_time, end_time):
+    student_result = student_record(id, start_time, end_time)
+    if student_result:
+        return student_result
+    else:
+        return teacher_record(id, start_time, end_time)
+
+
 def student_record(student_id, start_time, end_time):
     res = {
         "student_id": student_id,

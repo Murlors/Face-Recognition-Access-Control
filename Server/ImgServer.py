@@ -38,7 +38,7 @@ def recognize():
                 insert_processor.store_face_recognized_record(
                     door_id=response["door_id"], direction=response["direction"],
                     result_id=id, image_data=image.numpy())
-        return json.dumps([names, boxes])
+        return json.dumps([ids, names, boxes])
 
 
 @app.route("/register", methods=['POST'])

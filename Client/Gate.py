@@ -6,7 +6,8 @@ from PIL import Image
 
 
 class Gate:
-    def __init__(self, door_id, direction, url='http://localhost:8090'):
+    def __init__(self,widget, door_id, direction, url='http://localhost:8090'):
+        self.widget = widget
         self.door_id = door_id
         self.direction = direction
         self.url = url
@@ -73,7 +74,7 @@ class Gate:
                     "direction": self.direction,
                 }
                 response = requests.post(f"{self.url}/recognize", json=res)
-                names, boxes = json.loads(response.text)
+                ids, names, boxes = json.loads(response.text)
                 for i in range(len(boxes)):  # 将识别结果画在图像上
                     x1 = int(boxes[i][0] * 4)
                     y1 = int(boxes[i][1] * 4)
@@ -84,4 +85,8 @@ class Gate:
                     cv2.putText(frame, names[i], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
                 # 显示图像
-                cv2.imshow('frame', frame)
+                self.widget.ui.imgLabel.setPixmap(Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)).toqpixmap())
+                self.widget.ui.namelabel_2.setText(names[0])
+                self.widget.ui.idlabel.setText(ids[0])
+                self.widget.ui.statuslabel_2.setText(response.headers['direction'])
+                self.widget.ui.timelabel_3.setText(response.headers['time'])

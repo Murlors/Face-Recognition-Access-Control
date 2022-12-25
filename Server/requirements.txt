@@ -2,7 +2,6 @@ psycopg2
 pillow
 numpy
 flask
-opencv
 pytorch
 torchvision
 facenet_pytorch

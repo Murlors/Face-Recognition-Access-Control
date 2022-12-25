@@ -1,0 +1,5 @@
+PySide6
+json
+opencv-python
+requests
+pillow

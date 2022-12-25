@@ -1,6 +1,6 @@
 -- SELECT 'CREATE DATABASE AccessControlSystem;'
 -- WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '<db_name>')\gexec
-CREATE DATABASE AccessControlSystem;
+CREATE DATABASE AccessControlSystem; \c accesscontrolsystem
 
 CREATE TABLE Faculty(
 	FacultyID	integer	PRIMARY KEY,
