@@ -1,5 +1,6 @@
 # This Python file uses the following encoding: utf-8
 import sys
+from threading import Thread
 
 from PySide6.QtCore import QTimer, QDateTime
 from PySide6.QtWidgets import QMainWindow, QTableWidgetItem, QApplication
@@ -73,6 +74,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     widget = MainWindow()
     widget.show()
-    gate = Gate(widget, 1, 'in', url='http://localhost:8090')
-    gate.run()
+    gate = Gate(widget, 1, 'in', url='http://localhost:5555')
+    Thread(target=gate.run).start()
     sys.exit(app.exec())
