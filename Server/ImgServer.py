@@ -1,6 +1,6 @@
 import json
 
-import torch
+from torch import Tensor
 from flask import Flask
 from flask import request
 
@@ -22,7 +22,7 @@ def recognize():
     response = request.json
     rgb_frame = response["rgb_frame"]
     rgb_frame = json.loads(rgb_frame)
-    rgb_frame = torch.tensor(rgb_frame).cuda().float()
+    rgb_frame = Tensor(rgb_frame).cuda().float() if facenet.device == "cuda:0" else Tensor(rgb_frame).float()
     boxes, probs = facenet.face_detect(rgb_frame)
     # 人脸概率在0.5以上的保留
     boxes = [box for box, prob in zip(boxes, probs) if prob > 0.5]
@@ -46,7 +46,7 @@ def register():
     response = request.json
     rgb_frame = response["rgb_frame"]
     rgb_frame = json.loads(rgb_frame)
-    rgb_frame = torch.tensor(rgb_frame).cuda().float()
+    rgb_frame = Tensor(rgb_frame).cuda().float() if facenet.device == "cuda:0" else Tensor(rgb_frame).float()
     boxes, probs = facenet.face_detect(rgb_frame)
     # 人脸概率在0.5以上的保留
     boxes = [box for box, prob in zip(boxes, probs) if prob > 0.5]
