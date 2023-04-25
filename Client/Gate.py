@@ -2,11 +2,11 @@ import json
 
 import cv2
 import requests
-from PIL import Image
+from PySide6 import QtGui
 
 
 class Gate:
-    def __init__(self,widget, door_id, direction, url='http://localhost:8090'):
+    def __init__(self, widget, door_id, direction, url):
         self.widget = widget
         self.door_id = door_id
         self.direction = direction
@@ -65,7 +65,7 @@ class Gate:
                 backGround = gray
             else:  # 有移动目标则进行人脸识别
                 # cv2获取的图像是BGR格式的，需要转换成RGB格式
-                rgb_frame = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 # 减小图片大小加速传输
                 small_frame = cv2.resize(rgb_frame, (0, 0), fx=0.25, fy=0.25)
                 res = {
@@ -81,11 +81,14 @@ class Gate:
                     x2 = int(boxes[i][2] * 4)
                     y2 = int(boxes[i][3] * 4)
 
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
-                    cv2.putText(frame, names[i], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    cv2.rectangle(rgb_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                    cv2.putText(rgb_frame, names[i], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
                 # 显示图像
-                self.widget.ui.imgLabel.setPixmap(Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)).toqpixmap())
+                height, width, channel = rgb_frame.shape
+                bytes_per_line = 3 * width
+                q_img = QtGui.QImage(rgb_frame.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
+                self.widget.ui.imgLabel.setPixmap(QtGui.QPixmap(q_img))
                 self.widget.ui.namelabel_2.setText(names[0])
                 self.widget.ui.idlabel.setText(ids[0])
                 self.widget.ui.statuslabel_2.setText(response.headers['direction'])
