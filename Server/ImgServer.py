@@ -1,5 +1,7 @@
 import json
 
+import numpy as np
+from PIL import Image
 from torch import Tensor
 from flask import Flask
 from flask import request
@@ -22,13 +24,13 @@ def recognize():
     response = request.json
     rgb_frame = response["rgb_frame"]
     rgb_frame = json.loads(rgb_frame)
-    rgb_frame = Tensor(rgb_frame).cuda().float() if facenet.device == "cuda:0" else Tensor(rgb_frame).float()
-    boxes, probs = facenet.face_detect(rgb_frame)
+    rbg_image = Image.fromarray(np.uint8(rgb_frame))
+    boxes, probs = facenet.face_detect(rbg_image)
     # 人脸概率在0.5以上的保留
     boxes = [box for box, prob in zip(boxes, probs) if prob > 0.5]
     if boxes:  # 检测到人脸
         # 人脸图像
-        images = facenet.boxes_to_images(rgb_frame, boxes)
+        images = facenet.boxes_to_images(rbg_image, boxes)
         # 人脸特征
         embeddings_features = facenet.face_recognize(images)
         # 人脸识别
@@ -46,12 +48,12 @@ def register():
     response = request.json
     rgb_frame = response["rgb_frame"]
     rgb_frame = json.loads(rgb_frame)
-    rgb_frame = Tensor(rgb_frame).cuda().float() if facenet.device == "cuda:0" else Tensor(rgb_frame).float()
-    boxes, probs = facenet.face_detect(rgb_frame)
+    rbg_image = Image.fromarray(np.uint8(rgb_frame))
+    boxes, probs = facenet.face_detect(rbg_image)
     # 人脸概率在0.5以上的保留
     boxes = [box for box, prob in zip(boxes, probs) if prob > 0.5]
     boxes.sort()
-    images = facenet.boxes_to_images(rgb_frame, boxes[-1:])
+    images = facenet.boxes_to_images(rbg_image, boxes[-1:])
     embeddings_features = facenet.face_recognize(images)
     feature = embeddings_features[0]
     facenet.register_new_face(response["id"], response["name"], images[0], feature)

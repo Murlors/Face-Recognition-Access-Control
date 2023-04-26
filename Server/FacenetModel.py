@@ -41,12 +41,12 @@ class Facenet:
         return boxes, probs
 
     def boxes_to_images(self, image_data, boxes):
-        return_images = [self.loader(image_data.crop(box).resize((160, 160))) for box in boxes]
-        return torch.stack(return_images).to(self.device)
+        aligned_images = [self.loader(image_data.crop(box).resize((160, 160))) for box in boxes]
+        return torch.stack(aligned_images).to(self.device)
 
     def get_features(self, image_data):
         # 计算人脸特征向量
-        features = self.resnet(image_data).detach()
+        features = self.resnet(image_data).detach().cpu()
         return features
 
     def face_recognize(self, images):
@@ -76,7 +76,7 @@ class Facenet:
             'name': name,
             'feature_vector': new_feature_vector
         })
-        insert_processor.store_face_image(id, image_data.numpy(), new_feature_vector)
+        insert_processor.store_face_image(id, np.uint8(image_data), new_feature_vector.numpy())
         print(f"register: {id, name}")
 
 
