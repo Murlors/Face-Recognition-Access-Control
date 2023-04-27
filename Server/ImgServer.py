@@ -2,10 +2,10 @@ import json
 
 import numpy as np
 from PIL import Image
-from torch import Tensor
 from flask import Flask
 from flask import request
 
+import _init_paths
 from FacenetModel import Facenet
 from SQL.InsertProcessor import insert_processor
 from SQL.QueryProcessor import query_processor
@@ -39,7 +39,7 @@ def recognize():
             for id, name, image in zip(ids, names, images):
                 insert_processor.store_face_recognized_record(
                     door_id=response["door_id"], direction=response["direction"],
-                    result_id=id, image_data=image.numpy())
+                    result_id=id, image_data=np.uint8(image))
         return json.dumps([ids, names, boxes])
 
 
