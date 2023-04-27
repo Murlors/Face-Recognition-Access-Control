@@ -19,19 +19,20 @@ The project file structure is as follows:
 │   ├── ui_form.py
 │   └── ui_record.py
 ├── Server
+|   ├── _init_paths.py
 │   ├── FacenetModel.py
 │   ├── ImgServer.py
 │   └── requirements.txt
 ├── SQL
+│   ├── __init__.py
 │   ├── ConnectionPool.py
 │   ├── Create.sql
 │   ├── InsertProcessor.py
-│   ├── QueryProcessor.py
-│   └── __init__.py
+│   └── QueryProcessor.py
 ├── ERdiagram.excalidraw
 ├── LICENSE
 ├── README.md
-└── timeit.py
+└── _timeit.py
 ```
 
 ## System Functionality
@@ -49,15 +50,16 @@ Installation of this system is divided into two parts: the front-end client and 
 
 ### Client Installation
 
-1. Download and unzip the source code for this project, and navigate to the Client directory.
-2. Install dependencies: run pip install -r requirements.txt.
-3. Run the client: in the Client directory, run python main.py to start the client.
+1. Download and unzip the source code for this project, and navigate to the `Client` directory.
+2. Install dependencies: run `pip install -r requirements.txt`.
+3. Run the client: in the Client directory, run `python main.py` to start the client.
 
 ### Server Installation
 
-1. Download and unzip the source code for this project, and navigate to the Server directory.
-2. Install dependencies: run pip install -r requirements.txt.
-3. Run the server: in the Server directory, run python ImgServer.py to start the server.
+1. Download and unzip the source code for this project, and navigate to the `Server` directory.
+2. Install dependencies: run `pip install -r requirements.txt`. (ps. If you want to use CUDA to accelerate the model, you need to install the corresponding version of PyTorch and Torchvision. <https://pytorch.org/get-started/locally/>)
+3. Install PostgreSQL and create a database with the file `Create.sql`.
+4. Run the server: in the Server directory, run `python ImgServer.py` to start the server.
 
 ### Database Design
 
